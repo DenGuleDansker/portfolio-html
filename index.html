@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="da">
+<html lang="da" data-theme="dark">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -9,20 +9,77 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    [data-theme="dark"] {
+      --bg-page: #071520;
+      --bg-card: #0a1f2e;
+      --bg-hero: #0d2538;
+      --bg-btn: #071520;
+      --border: #1a3a52;
+      --border-section: #112233;
+      --text-primary: #d6e0e8;
+      --text-muted: #8fafc4;
+      --text-link: #c5d8e8;
+      --accent: #b26617;
+      --accent-hover: #d4832a;
+      --steel: #33638a;
+      --work-bg: #0d2030;
+      --work-border: #b26617;
+      --work-text: #e8c07a;
+    }
+    [data-theme="light"] {
+      --bg-page: #e8f0f5;
+      --bg-card: #ffffff;
+      --bg-hero: #ddeaf4;
+      --bg-btn: #f0f6fa;
+      --border: #b0cfe0;
+      --border-section: #ccdde8;
+      --text-primary: #0a1f2e;
+      --text-muted: #3a6070;
+      --text-link: #0d2538;
+      --accent: #b26617;
+      --accent-hover: #d4832a;
+      --steel: #1f5070;
+      --work-bg: #fff4e0;
+      --work-border: #b26617;
+      --work-text: #7a3f00;
+    }
+
     body {
       font-family: 'Inter', sans-serif;
-      background: #071520;
-      color: #d6e0e8;
+      background: var(--bg-page);
+      color: var(--text-primary);
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 1.5rem 1rem;
+      transition: background 0.3s, color 0.3s;
+      overflow-x: hidden;
+    }
+
+    canvas#weather {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .lightning-flash {
+      position: fixed;
+      inset: 0;
+      background: rgba(255,255,255,0);
+      pointer-events: none;
+      z-index: 1;
+      transition: background 0.05s;
     }
 
     .card {
-      background: #0a1f2e;
-      border: 1px solid #1a3a52;
+      position: relative;
+      z-index: 2;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
       border-radius: 20px;
       width: 100%;
       max-width: 480px;
@@ -31,202 +88,223 @@
       transform: translateY(24px);
       animation: fadeUp 0.6s ease forwards 0.1s;
     }
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
 
-    @keyframes fadeUp {
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Hero */
     .hero {
-      border-top: 4px solid #b26617;
-      background: #0d2538;
+      position: relative;
+      border-top: 4px solid var(--accent);
+      background: var(--bg-hero);
       padding: 2rem 1.5rem 1.75rem;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      border-bottom: 1px solid #1a3a52;
+      border-bottom: 1px solid var(--border);
     }
+
+    /* Corner buttons inside hero */
+    .hero-corner {
+      position: absolute;
+      top: 0.65rem;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .hero-corner.left { left: 0.65rem; }
+    .hero-corner.right { right: 0.65rem; }
+
+    .ctrl-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 0.3rem 0.65rem;
+      font-size: 0.68rem;
+      font-weight: 500;
+      font-family: 'Inter', sans-serif;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+    .ctrl-btn:hover { border-color: var(--steel); color: var(--text-primary); }
+    .ctrl-btn i { font-size: 0.65rem; }
+
+    /* Weather dropdown */
+    .weather-wrap { position: relative; }
+    .weather-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      display: none;
+      flex-direction: column;
+      min-width: 130px;
+      z-index: 20;
+    }
+    .weather-wrap.open .weather-menu { display: flex; }
+    .weather-opt {
+      padding: 0.5rem 0.85rem;
+      font-size: 0.73rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.1s, color 0.1s;
+    }
+    .weather-opt:hover { background: var(--bg-hero); color: var(--text-primary); }
+    .weather-opt.active { color: var(--accent); }
 
     .avatar {
       width: 84px; height: 84px;
       border-radius: 50%;
-      background: #33638a;
-      border: 3px solid #b26617;
+      object-fit: cover;
+      border: 3px solid var(--accent);
+      margin-bottom: 1rem;
+      opacity: 0;
+      animation: fadeUp 0.5s ease forwards 0.4s;
+    }
+    .avatar-fallback {
+      width: 84px; height: 84px;
+      border-radius: 50%;
+      background: var(--steel);
+      border: 3px solid var(--accent);
       display: flex; align-items: center; justify-content: center;
-      font-size: 1.5rem; font-weight: 600; color: #d6e0e8;
+      font-size: 1.5rem; font-weight: 600; color: #fff;
       margin-bottom: 1rem;
       opacity: 0;
       animation: fadeUp 0.5s ease forwards 0.4s;
     }
 
     .name {
-      font-size: 1.45rem; font-weight: 600; color: #d6e0e8;
-      margin-bottom: 0.2rem;
-      min-height: 1.8rem;
+      font-size: 1.45rem; font-weight: 600; color: var(--text-primary);
+      margin-bottom: 0.2rem; min-height: 1.8rem;
     }
-
     .tagline {
-      font-size: 0.82rem; color: #b26617; font-weight: 500;
-      margin-bottom: 1rem;
+      font-size: 0.82rem; color: var(--accent); font-weight: 500;
       opacity: 0;
       animation: fadeUp 0.5s ease forwards 0.9s;
     }
 
-    .badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: #0a1f2e; border: 1px solid #33638a;
-      color: #d6e0e8; font-size: 0.73rem;
-      padding: 4px 12px; border-radius: 20px;
-      opacity: 0;
-      animation: fadeUp 0.5s ease forwards 1s;
-    }
-    .badge i { font-size: 0.6rem; color: #b26617; }
-
-    /* Sections */
     .section {
       padding: 1.2rem 1.5rem;
-      border-bottom: 1px solid #112233;
+      border-bottom: 1px solid var(--border-section);
       opacity: 0;
       animation: fadeUp 0.5s ease forwards 0.7s;
     }
-    .section:nth-child(3) { animation-delay: 0.85s; }
-    .section:nth-child(4) { animation-delay: 1.0s; }
-    .section:nth-child(5) { animation-delay: 1.1s; }
+    .section:nth-child(2) { animation-delay: 0.85s; }
     .section:last-child { border-bottom: none; }
 
     .section-label {
       font-size: 0.63rem; font-weight: 600;
       text-transform: uppercase; letter-spacing: 0.12em;
-      color: #33638a; margin-bottom: 0.75rem;
+      color: var(--steel); margin-bottom: 0.75rem;
     }
 
     .about-text {
-      font-size: 0.81rem; line-height: 1.75; color: #8fafc4;
+      font-size: 0.81rem; line-height: 1.75; color: var(--text-muted);
+      margin-bottom: 1rem;
     }
-    .about-text strong { color: #d6e0e8; }
+    .about-text strong { color: var(--text-primary); }
 
-    /* Projects */
-    .projects { display: flex; flex-direction: column; gap: 0.5rem; }
-
-    .project-item { border-radius: 8px; overflow: hidden; }
-
-    .project-header {
-      display: flex; align-items: center; gap: 10px;
-      padding: 0.65rem 0.75rem;
-      background: #071520;
-      border: 1px solid #1a3a52;
-      border-left: 3px solid #33638a;
-      border-radius: 8px;
-      color: #c5d8e8; font-size: 0.8rem;
-      cursor: pointer;
-      transition: background 0.15s, border-left-color 0.15s;
-      user-select: none;
-    }
-    .project-header:hover { background: #0d2538; border-left-color: #b26617; }
-    .project-header i.icon { color: #b26617; font-size: 0.85rem; width: 16px; text-align: center; }
-    .project-header .proj-date { margin-left: auto; font-size: 0.7rem; color: #33638a; }
-    .project-header .chevron {
-      font-size: 0.65rem; color: #33638a;
-      transition: transform 0.25s ease; margin-left: 6px;
-    }
-    .project-item.open .project-header { border-radius: 8px 8px 0 0; border-left-color: #b26617; }
-    .project-item.open .chevron { transform: rotate(180deg); }
-
-    .project-body {
-      max-height: 0; overflow: hidden;
-      transition: max-height 0.3s ease;
-      background: #071520;
-      border: 1px solid #1a3a52; border-top: none;
-      border-radius: 0 0 8px 8px;
-    }
-    .project-item.open .project-body { max-height: 200px; }
-    .project-body-inner {
-      padding: 0.75rem;
-      display: flex; flex-direction: column; gap: 8px;
-    }
-    .project-body p { font-size: 0.78rem; color: #8fafc4; line-height: 1.6; }
-    .project-body a {
-      display: inline-flex; align-items: center; gap: 6px;
-      font-size: 0.75rem; color: #b26617; text-decoration: none;
-      border: 1px solid #b26617; padding: 4px 10px; border-radius: 6px;
-      width: fit-content;
-      transition: background 0.15s;
-    }
-    .project-body a:hover { background: #1a2f1a; }
-
-    /* Skills */
-    .skills { display: flex; flex-direction: column; gap: 10px; }
-    .skill-row { display: flex; flex-direction: column; gap: 4px; }
-    .skill-top { display: flex; justify-content: space-between; font-size: 0.75rem; }
-    .skill-name { color: #c5d8e8; }
-    .skill-pct { color: #33638a; }
-    .skill-bar-bg {
-      height: 5px; background: #071520;
-      border-radius: 99px; overflow: hidden;
-      border: 1px solid #1a3a52;
-    }
-    .skill-bar-fill {
-      height: 100%; width: 0;
-      background: linear-gradient(90deg, #33638a, #b26617);
-      border-radius: 99px;
-      transition: width 1s ease;
-    }
-
-    /* Links */
     .links { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
-
     .link-btn {
       display: flex; align-items: center; justify-content: center;
       gap: 8px; padding: 0.65rem;
-      background: #071520; border: 1px solid #1a3a52;
+      background: var(--bg-btn); border: 1px solid var(--border);
       border-radius: 10px; text-decoration: none;
-      color: #c5d8e8; font-size: 0.8rem; font-weight: 500;
+      color: var(--text-link); font-size: 0.8rem; font-weight: 500;
       transition: background 0.15s, border-color 0.15s;
       min-height: 44px;
     }
-    .link-btn:hover { background: #0d2538; border-color: #33638a; }
-    .link-btn i { font-size: 0.85rem; color: #33638a; }
-
+    .link-btn:hover { background: var(--bg-hero); border-color: var(--steel); }
+    .link-btn i { font-size: 0.85rem; color: var(--steel); }
     .link-btn.work {
       grid-column: 1 / -1;
-      background: #0d2030; border: 1px solid #b26617;
-      color: #e8c07a; font-weight: 600;
+      background: var(--work-bg); border: 1px solid var(--work-border);
+      color: var(--work-text); font-weight: 600;
     }
-    .link-btn.work:hover { background: #162a3a; border-color: #d4832a; }
-    .link-btn.work i { color: #b26617; }
+    .link-btn.work:hover { border-color: var(--accent-hover); }
+    .link-btn.work i { color: var(--accent); }
 
-    /* Typing cursor */
     .cursor {
-      display: inline-block;
-      width: 2px; height: 1.1em;
-      background: #b26617;
-      margin-left: 2px;
+      display: inline-block; width: 2px; height: 1.1em;
+      background: var(--accent); margin-left: 2px;
       vertical-align: text-bottom;
       animation: blink 0.75s step-end infinite;
     }
     @keyframes blink { 50% { opacity: 0; } }
 
+    .mystery-face {
+      position: fixed;
+      pointer-events: none;
+      z-index: 0;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--accent);
+      animation: fallFace 4s ease-in forwards;
+      transform-origin: center;
+      opacity: 0.5;
+    }
+    @keyframes fallFace {
+      0%   { opacity: 1; transform: translateY(0) rotate(0deg); }
+      100% { opacity: 0; transform: translateY(110vh) rotate(720deg); }
+    }
+
     @media (max-width: 400px) {
-      .hero { padding: 1.5rem 1rem 1.5rem; }
+      .hero { padding: 1.5rem 1rem; }
       .section { padding: 1rem; }
       .name { font-size: 1.2rem; }
     }
   </style>
 </head>
 <body>
-<div class="card">
 
+<canvas id="weather"></canvas>
+<div class="lightning-flash" id="flash"></div>
+
+<div class="card">
   <div class="hero">
-    <img class="avatar" src="assets/billede.jpg" alt="Chi Linh Mac" onerror="this.outerHTML='<div class=\'avatar\'>CLM</div>'"/>
+
+    <!-- Weather dropdown — left corner -->
+    <div class="hero-corner left">
+      <div class="weather-wrap" id="weatherWrap">
+        <button class="ctrl-btn" onclick="toggleWeatherMenu()">
+          ❄️ Effekt <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="weather-menu">
+          <div class="weather-opt active" id="opt-snow"    onclick="setWeather('snow')">❄️ Sne</div>
+          <div class="weather-opt"        id="opt-rain"    onclick="setWeather('rain')">🌧️ Regn</div>
+          <div class="weather-opt"        id="opt-thunder" onclick="setWeather('thunder')">⛈️ Torden</div>
+          <div class="weather-opt"        id="opt-mystery" onclick="setWeather('mystery')">🤫 Mystery</div>
+          <div class="weather-opt"        id="opt-none"    onclick="setWeather('none')">🚫 Ingen</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Theme toggle — right corner -->
+    <div class="hero-corner right">
+      <button class="ctrl-btn" id="themeBtn" onclick="toggleTheme()">
+        <i class="fa-solid fa-moon"></i> Dark
+      </button>
+    </div>
+
+    <img class="avatar" src="assets/billede.jpg" alt="Chi Linh Mac"
+      onerror="this.outerHTML='<div class=\'avatar-fallback\'>CLM</div>'"/>
     <div class="name" id="typed-name"><span class="cursor"></span></div>
     <div class="tagline">IT-Developer · Dataminds A/S</div>
-
   </div>
 
   <div class="section">
     <div class="section-label">About</div>
-    <p class="about-text" style="margin-bottom: 1rem;">
+    <p class="about-text">
       Detail-oriented IT developer with a passion for automation and operations.
       I love exploring new technologies and integrating them into real projects —
       always with a focus on results, teamwork, and effective communication.
@@ -251,57 +329,208 @@
     </div>
   </div>
 
-
-
   <div class="section">
     <div class="section-label">GitHub Activity</div>
     <img
-      src="https://github-readme-activity-graph.vercel.app/graph?username=DenGuleDansker&custom_title=GitHub%20Activity&bg_color=071520&color=33638a&line=b26617&point=b26617&area_color=33638a&title_color=d6e0e8&area=true&hide_border=true"
+      id="ghGraph"
       alt="GitHub activity graph"
       style="width:100%; border-radius:8px; display:block;"
     />
   </div>
-
-
-
 </div>
 
 <script>
-  // Typing effect
+  const graphUrls = {
+    dark: 'https://github-readme-activity-graph.vercel.app/graph?username=DenGuleDansker&custom_title=GitHub%20Activity&bg_color=071520&color=33638a&line=b26617&point=b26617&area_color=33638a&title_color=d6e0e8&area=true&hide_border=true',
+    light: 'https://github-readme-activity-graph.vercel.app/graph?username=DenGuleDansker&custom_title=GitHub%20Activity&bg_color=e8f0f5&color=1f5070&line=b26617&point=b26617&area_color=b0cfe0&title_color=0a1f2e&area=true&hide_border=true',
+  };
+
+  function updateGraph(theme) {
+    document.getElementById('ghGraph').src = graphUrls[theme];
+  }
+  updateGraph('dark');
   const nameEl = document.getElementById('typed-name');
-  const text = 'Chi Linh Mac';
-  let i = 0;
+  const fullName = 'Chi Linh Mac';
+  let ti = 0;
   setTimeout(() => {
     nameEl.innerHTML = '<span class="cursor"></span>';
     const t = setInterval(() => {
-      if (i < text.length) {
-        nameEl.innerHTML = text.slice(0, ++i) + '<span class="cursor"></span>';
-      } else {
-        clearInterval(t);
-      }
+      if (ti < fullName.length) nameEl.innerHTML = fullName.slice(0, ++ti) + '<span class="cursor"></span>';
+      else clearInterval(t);
     }, 80);
   }, 600);
 
-  function toggleProject(el) {
-    el.classList.toggle('open');
+  // Theme
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    updateGraph(isDark ? 'light' : 'dark');
+    const btn = document.getElementById('themeBtn');
+    btn.innerHTML = isDark
+      ? '<i class="fa-solid fa-sun"></i> Light'
+      : '<i class="fa-solid fa-moon"></i> Dark';
   }
 
-  function toggleSection(label) {
-    const body = label.nextElementSibling;
-    const chevron = label.querySelector('i');
-    const isOpen = body.style.maxHeight && body.style.maxHeight !== '0px';
-    body.style.maxHeight = isOpen ? '0px' : '600px';
-    body.style.overflow = 'hidden';
-    body.style.transition = 'max-height 0.3s ease';
-    chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+  // Weather menu
+  function toggleWeatherMenu() {
+    document.getElementById('weatherWrap').classList.toggle('open');
+  }
+  document.addEventListener('click', e => {
+    if (!document.getElementById('weatherWrap').contains(e.target))
+      document.getElementById('weatherWrap').classList.remove('open');
+  });
+
+  // Canvas
+  const canvas = document.getElementById('weather');
+  const ctx = canvas.getContext('2d');
+  let particles = [], mode = 'snow';
+  let thunderTimer, mysteryTimer;
+  const faces = ['😂','🥹','😭','🤩','😎','🥶','🤯','👀','💀','🤙','😤','🫠'];
+
+  function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', () => { resize(); initParticles(); });
+
+  function isDark() { return document.documentElement.getAttribute('data-theme') === 'dark'; }
+
+  function getColor() {
+    if (mode === 'rain' || mode === 'thunder')
+      return isDark() ? 'rgba(160,200,255,0.4)' : 'rgba(60,110,160,0.28)';
+    return isDark() ? 'rgba(255,255,255,0.62)' : 'rgba(80,140,190,0.38)';
   }
 
-  const pb = document.getElementById('projects-body');
-  pb.style.maxHeight = '0px';
-  pb.style.overflow = 'hidden';
-  pb.style.transition = 'max-height 0.3s ease';
+  function makeParticle(rnd) {
+    const isRain = mode === 'rain' || mode === 'thunder';
+    return {
+      x: Math.random() * canvas.width,
+      y: rnd ? Math.random() * canvas.height : -10,
+      r: isRain ? 0.6 + Math.random() * 0.8 : 1.5 + Math.random() * 2.5,
+      speed: isRain ? 3.5 + Math.random() * 3 : 0.6 + Math.random() * 1.2,
+      drift: isRain ? (Math.random() - 0.5) * 0.4 : (Math.random() - 0.5) * 0.5,
+      len: isRain ? 14 + Math.random() * 10 : 0,
+    };
+  }
 
+  function initParticles() {
+    clearTimeout(thunderTimer);
+    clearTimeout(mysteryTimer);
+    particles = [];
+    if (mode === 'none' || mode === 'mystery') return;
+    const n = (mode === 'rain' || mode === 'thunder') ? 160 : 100;
+    for (let i = 0; i < n; i++) particles.push(makeParticle(true));
+    if (mode === 'thunder') scheduleLightning();
+    if (mode === 'mystery') scheduleMystery();  }
 
+  // Lightning
+  function scheduleLightning() {
+    if (mode !== 'thunder') return;
+    const delay = 3000 + Math.random() * 2000;
+    thunderTimer = setTimeout(() => {
+      doLightning();
+      scheduleLightning();
+    }, delay);
+  }
+
+  function doLightning() {
+    const flash = document.getElementById('flash');
+    // Draw bolt on canvas
+    const boltX = Math.random() * canvas.width;
+    drawBolt(boltX, 0, boltX + (Math.random()-0.5)*80, canvas.height * 0.5);
+    // Flash screen
+    flash.style.background = 'rgba(255,255,220,0.18)';
+    setTimeout(() => { flash.style.background = 'rgba(255,255,255,0)'; }, 80);
+    setTimeout(() => {
+      flash.style.background = 'rgba(255,255,220,0.1)';
+      setTimeout(() => { flash.style.background = 'rgba(255,255,255,0)'; }, 60);
+    }, 140);
+  }
+
+  function drawBolt(x1, y1, x2, y2) {
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,240,100,0.9)';
+    ctx.lineWidth = 1.5;
+    ctx.shadowColor = 'rgba(255,240,100,0.8)';
+    ctx.shadowBlur = 8;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    let cx = x1, cy = y1;
+    const steps = 10;
+    for (let i = 1; i <= steps; i++) {
+      const tx = x1 + (x2-x1)*(i/steps) + (Math.random()-0.5)*40;
+      const ty = y1 + (y2-y1)*(i/steps);
+      ctx.lineTo(tx, ty);
+      cx = tx; cy = ty;
+    }
+    ctx.stroke();
+    ctx.restore();
+    setTimeout(() => {}, 100);
+  }
+
+  // Mystery faces
+  function scheduleMystery() {
+    if (mode !== 'mystery') return;
+    const delay = 300 + Math.random() * 600;
+    mysteryTimer = setTimeout(() => {
+      spawnFace();
+      scheduleMystery();
+    }, delay);
+  }
+
+  function spawnFace() {
+    const el = document.createElement('img');
+    el.src = 'assets/billede.jpg';
+    el.className = 'mystery-face';
+    const size = (40 + Math.random() * 50) + 'px';
+    el.style.width = size;
+    el.style.height = size;
+    el.style.left = (Math.random() * (window.innerWidth - 80)) + 'px';
+    el.style.top = '-80px';
+    el.style.animationDuration = (2.5 + Math.random() * 3) + 's';
+    document.body.appendChild(el);
+    el.addEventListener('animationend', () => el.remove());
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (mode !== 'none' && mode !== 'mystery' && particles.length) {
+      const col = getColor();
+      particles.forEach(p => {
+        ctx.beginPath();
+        if (mode === 'rain' || mode === 'thunder') {
+          ctx.strokeStyle = col; ctx.lineWidth = p.r;
+          ctx.moveTo(p.x, p.y); ctx.lineTo(p.x + p.drift*2, p.y + p.len); ctx.stroke();
+        } else {
+          ctx.fillStyle = col; ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill();
+        }
+        p.y += p.speed; p.x += p.drift;
+        if (p.y > canvas.height + 20) Object.assign(p, makeParticle(false));
+      });
+    }
+    requestAnimationFrame(draw);
+  }
+
+  function setWeather(m) {
+    clearTimeout(thunderTimer);
+    clearTimeout(mysteryTimer);
+    document.querySelectorAll('.mystery-face').forEach(f => f.remove());
+    mode = m;
+    document.querySelectorAll('.weather-opt').forEach(o => o.classList.remove('active'));
+    document.getElementById('opt-' + m).classList.add('active');
+    document.getElementById('weatherWrap').classList.remove('open');
+
+    // Update icon
+          const icons = { snow:'❄️', rain:'🌧️', thunder:'⛈️', mystery:'🤫', none:'🚫' };
+    document.querySelector('#weatherWrap .ctrl-btn').innerHTML =
+      `${icons[m]} Effekt <i class="fa-solid fa-chevron-down"></i>`;
+
+    initParticles();
+    if (m === 'thunder') scheduleLightning();
+    if (m === 'mystery') scheduleMystery();
+  }
+
+  initParticles();
+  draw();
 </script>
 </body>
 </html>
