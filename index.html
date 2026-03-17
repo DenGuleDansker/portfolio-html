@@ -1,105 +1,307 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f2f3fb" />
-    <title>Chi Linh Mac</title>
+<html lang="da">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Chi Linh Mac</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-      rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
-      rel="stylesheet"/>
-    <link href="assets/style/style.css" rel="stylesheet" />
-    <!-- Unpkg for card scroll reveal effect -->
-    <script src="https://unpkg.com/scrollreveal"></script>
-  </head>
-  <body>
-    <div class="wrapper">
-      <div class="container">
-        <!----Picture and name---->
-        <div class="picture">
-          <img src="assets/billede.jpg" alt="Rakesh Chowdhury's photo" />
-        </div>
-        <div class="name" translate="no">Chi Linh Mac</div>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #071520;
+      color: #d6e0e8;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem 1rem;
+    }
 
-        <!----Few personal detail---->
-        <!--more details button-->
-        <div class="info-box">
-          About me
-          <div class="toggle" onclick="vibrate()">
-            <i class="fa-solid fa-chevron-down"></i>
-          </div>
-          <!--details-->
-          <div>
-            <br/>
-            <div class="details">
-              <ul>
-              <li class="about">
-                Hello, I’m Chi Linh, a detail-oriented and responsible IT student currently in my sixth semester, studying IT-architecture. I have a deep passion for my work, particularly when it involves automation and operations. As a spontaneous individual, I love to explore new technologies and integrate them into my projects. I'm committed to delivering top-notch results and continually strive to learn and grow. Most importantly, I value teamwork and recognize the significance of effective communication and collaboration.
-                <br><br>
-                Please don't hesitate to connect with me on every major social media platform with my username @denguledansker.
-              </li>
-              <li><b>Projects:</b>
-                <div class="projects">
+    .card {
+      background: #0a1f2e;
+      border: 1px solid #1a3a52;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 480px;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(24px);
+      animation: fadeUp 0.6s ease forwards 0.1s;
+    }
 
-                  <a href="https://github.com/DenGuleDansker/FestivalSystem" class="project">
-                    <i class="fa-solid fa-file"></i>
-                    <ul>
-                      <li>
-                        <p>Booking system - 2. semester project</p>
-                      </li>
-                      <li><small>Created 28.05.2023</small></li>
-                    </ul>
-                  </a>
-                  
-                  <a href="https://github.com/DenGuleDansker/RedditCopyCat" class="project">
-                    <i class="fa-solid fa-file"></i>
-                    <ul>
-                      <li>
-                        <p>Creddit copycat - 3. semester miniproject</p>
-                      </li>
-                      <li><small>Created 10.10.2023</small></li>
-                    </ul>
-                  </a>
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-                  <a href="https://moviedatabase-t98s.onrender.com/" class="project">
-                    <i class="fa-solid fa-file"></i>
-                    <ul>
-                      <li>
-                        <p>Movie database - Hobby project</p>
-                      </li>
-                      <li><small>Created 08.12.2024</small></li>
-                    </ul>
-                  </a>
-                  
-                
-                </div>
-              </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        <!----All social media buttons---->
-        <div class="social-media">
-          <a href="https://cv.chilinhmac.dk/"
-          ><div><i class="fa-regular fa-file"></i>CV</div>
-        </a>
-         <a href="https://github.com/denguledansker">
-          <div><i class="fa-brands fa-github"></i>Github</div>
-         </a>
-          <a href="https://www.linkedin.com/in/chi-linh-mac/"
-            ><div><i class="fa-brands fa-linkedin-in"></i>LinkedIn</div>
-          </a>
-          <a href="https://hub.docker.com/u/chilinhm"
-            ><div><i class="fa-brands fa-docker"></i>Docker</div>
-          </a>
-          <a href="mailto:chilinhm@gmail.com">
-            <div><i class="fa-solid fa-envelope"></i>Email</div>
-          </a>
-        </div>
-      </div>
+    /* Hero */
+    .hero {
+      border-top: 4px solid #b26617;
+      background: #0d2538;
+      padding: 2rem 1.5rem 1.75rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      border-bottom: 1px solid #1a3a52;
+    }
+
+    .avatar {
+      width: 84px; height: 84px;
+      border-radius: 50%;
+      background: #33638a;
+      border: 3px solid #b26617;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; font-weight: 600; color: #d6e0e8;
+      margin-bottom: 1rem;
+      opacity: 0;
+      animation: fadeUp 0.5s ease forwards 0.4s;
+    }
+
+    .name {
+      font-size: 1.45rem; font-weight: 600; color: #d6e0e8;
+      margin-bottom: 0.2rem;
+      min-height: 1.8rem;
+    }
+
+    .tagline {
+      font-size: 0.82rem; color: #b26617; font-weight: 500;
+      margin-bottom: 1rem;
+      opacity: 0;
+      animation: fadeUp 0.5s ease forwards 0.9s;
+    }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #0a1f2e; border: 1px solid #33638a;
+      color: #d6e0e8; font-size: 0.73rem;
+      padding: 4px 12px; border-radius: 20px;
+      opacity: 0;
+      animation: fadeUp 0.5s ease forwards 1s;
+    }
+    .badge i { font-size: 0.6rem; color: #b26617; }
+
+    /* Sections */
+    .section {
+      padding: 1.2rem 1.5rem;
+      border-bottom: 1px solid #112233;
+      opacity: 0;
+      animation: fadeUp 0.5s ease forwards 0.7s;
+    }
+    .section:nth-child(3) { animation-delay: 0.85s; }
+    .section:nth-child(4) { animation-delay: 1.0s; }
+    .section:nth-child(5) { animation-delay: 1.1s; }
+    .section:last-child { border-bottom: none; }
+
+    .section-label {
+      font-size: 0.63rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.12em;
+      color: #33638a; margin-bottom: 0.75rem;
+    }
+
+    .about-text {
+      font-size: 0.81rem; line-height: 1.75; color: #8fafc4;
+    }
+    .about-text strong { color: #d6e0e8; }
+
+    /* Projects */
+    .projects { display: flex; flex-direction: column; gap: 0.5rem; }
+
+    .project-item { border-radius: 8px; overflow: hidden; }
+
+    .project-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 0.65rem 0.75rem;
+      background: #071520;
+      border: 1px solid #1a3a52;
+      border-left: 3px solid #33638a;
+      border-radius: 8px;
+      color: #c5d8e8; font-size: 0.8rem;
+      cursor: pointer;
+      transition: background 0.15s, border-left-color 0.15s;
+      user-select: none;
+    }
+    .project-header:hover { background: #0d2538; border-left-color: #b26617; }
+    .project-header i.icon { color: #b26617; font-size: 0.85rem; width: 16px; text-align: center; }
+    .project-header .proj-date { margin-left: auto; font-size: 0.7rem; color: #33638a; }
+    .project-header .chevron {
+      font-size: 0.65rem; color: #33638a;
+      transition: transform 0.25s ease; margin-left: 6px;
+    }
+    .project-item.open .project-header { border-radius: 8px 8px 0 0; border-left-color: #b26617; }
+    .project-item.open .chevron { transform: rotate(180deg); }
+
+    .project-body {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.3s ease;
+      background: #071520;
+      border: 1px solid #1a3a52; border-top: none;
+      border-radius: 0 0 8px 8px;
+    }
+    .project-item.open .project-body { max-height: 200px; }
+    .project-body-inner {
+      padding: 0.75rem;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .project-body p { font-size: 0.78rem; color: #8fafc4; line-height: 1.6; }
+    .project-body a {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.75rem; color: #b26617; text-decoration: none;
+      border: 1px solid #b26617; padding: 4px 10px; border-radius: 6px;
+      width: fit-content;
+      transition: background 0.15s;
+    }
+    .project-body a:hover { background: #1a2f1a; }
+
+    /* Skills */
+    .skills { display: flex; flex-direction: column; gap: 10px; }
+    .skill-row { display: flex; flex-direction: column; gap: 4px; }
+    .skill-top { display: flex; justify-content: space-between; font-size: 0.75rem; }
+    .skill-name { color: #c5d8e8; }
+    .skill-pct { color: #33638a; }
+    .skill-bar-bg {
+      height: 5px; background: #071520;
+      border-radius: 99px; overflow: hidden;
+      border: 1px solid #1a3a52;
+    }
+    .skill-bar-fill {
+      height: 100%; width: 0;
+      background: linear-gradient(90deg, #33638a, #b26617);
+      border-radius: 99px;
+      transition: width 1s ease;
+    }
+
+    /* Links */
+    .links { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+
+    .link-btn {
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px; padding: 0.65rem;
+      background: #071520; border: 1px solid #1a3a52;
+      border-radius: 10px; text-decoration: none;
+      color: #c5d8e8; font-size: 0.8rem; font-weight: 500;
+      transition: background 0.15s, border-color 0.15s;
+      min-height: 44px;
+    }
+    .link-btn:hover { background: #0d2538; border-color: #33638a; }
+    .link-btn i { font-size: 0.85rem; color: #33638a; }
+
+    .link-btn.work {
+      grid-column: 1 / -1;
+      background: #0d2030; border: 1px solid #b26617;
+      color: #e8c07a; font-weight: 600;
+    }
+    .link-btn.work:hover { background: #162a3a; border-color: #d4832a; }
+    .link-btn.work i { color: #b26617; }
+
+    /* Typing cursor */
+    .cursor {
+      display: inline-block;
+      width: 2px; height: 1.1em;
+      background: #b26617;
+      margin-left: 2px;
+      vertical-align: text-bottom;
+      animation: blink 0.75s step-end infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    @media (max-width: 400px) {
+      .hero { padding: 1.5rem 1rem 1.5rem; }
+      .section { padding: 1rem; }
+      .name { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="card">
+
+  <div class="hero">
+    <img class="avatar" src="assets/billede.jpg" alt="Chi Linh Mac" onerror="this.outerHTML='<div class=\'avatar\'>CLM</div>'"/>
+    <div class="name" id="typed-name"><span class="cursor"></span></div>
+    <div class="tagline">IT-Developer · Dataminds A/S</div>
+
+  </div>
+
+  <div class="section">
+    <div class="section-label">About</div>
+    <p class="about-text" style="margin-bottom: 1rem;">
+      Detail-oriented IT developer with a passion for automation and operations.
+      I love exploring new technologies and integrating them into real projects —
+      always with a focus on results, teamwork, and effective communication.
+      Find me everywhere as <strong>@denguledansker</strong>.
+    </p>
+    <div class="links">
+      <a class="link-btn work" href="https://www.dataminds.com/da" target="_blank">
+        <i class="fa-solid fa-building"></i> Work · Dataminds
+      </a>
+      <a class="link-btn" href="https://cv.chilinhmac.dk/" target="_blank">
+        <i class="fa-regular fa-file"></i> CV
+      </a>
+      <a class="link-btn" href="https://github.com/denguledansker" target="_blank">
+        <i class="fa-brands fa-github"></i> GitHub
+      </a>
+      <a class="link-btn" href="https://www.linkedin.com/in/chi-linh-mac/" target="_blank">
+        <i class="fa-brands fa-linkedin-in"></i> LinkedIn
+      </a>
+      <a class="link-btn" href="https://hub.docker.com/u/chilinhm" target="_blank">
+        <i class="fa-brands fa-docker"></i> Docker Hub
+      </a>
     </div>
-    <script src="assets/js/script.js"></script>
-  </body>
+  </div>
+
+
+
+  <div class="section">
+    <div class="section-label">GitHub Activity</div>
+    <img
+      src="https://github-readme-activity-graph.vercel.app/graph?username=DenGuleDansker&custom_title=GitHub%20Activity&bg_color=071520&color=33638a&line=b26617&point=b26617&area_color=33638a&title_color=d6e0e8&area=true&hide_border=true"
+      alt="GitHub activity graph"
+      style="width:100%; border-radius:8px; display:block;"
+    />
+  </div>
+
+
+
+</div>
+
+<script>
+  // Typing effect
+  const nameEl = document.getElementById('typed-name');
+  const text = 'Chi Linh Mac';
+  let i = 0;
+  setTimeout(() => {
+    nameEl.innerHTML = '<span class="cursor"></span>';
+    const t = setInterval(() => {
+      if (i < text.length) {
+        nameEl.innerHTML = text.slice(0, ++i) + '<span class="cursor"></span>';
+      } else {
+        clearInterval(t);
+      }
+    }, 80);
+  }, 600);
+
+  function toggleProject(el) {
+    el.classList.toggle('open');
+  }
+
+  function toggleSection(label) {
+    const body = label.nextElementSibling;
+    const chevron = label.querySelector('i');
+    const isOpen = body.style.maxHeight && body.style.maxHeight !== '0px';
+    body.style.maxHeight = isOpen ? '0px' : '600px';
+    body.style.overflow = 'hidden';
+    body.style.transition = 'max-height 0.3s ease';
+    chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+  }
+
+  const pb = document.getElementById('projects-body');
+  pb.style.maxHeight = '0px';
+  pb.style.overflow = 'hidden';
+  pb.style.transition = 'max-height 0.3s ease';
+
+
+</script>
+</body>
 </html>
